@@ -10,7 +10,7 @@ FROM phusion/baseimage:0.9.13
 MAINTAINER razorgirl <https://github.com/razorgirl>
 
 # Set correct environment variables.
-ENV TZ Europe/London
+ENV TZ America/New_York
 ENV HOME /root
 ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US.UTF-8
@@ -43,9 +43,8 @@ RUN \
 
 # Install MariaDB.
 RUN \
-  apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 0xcbcb082a1bb943db && \
-  apt-get update && \
-  echo "deb http://mirror2.hs-esslingen.de/mariadb/repo/10.0/ubuntu trusty main" > /etc/apt/sources.list.d/mariadb.list && \
+  sudo apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xcbcb082a1bb943db && \
+  sudo add-apt-repository 'deb [arch=amd64,i386] http://nyc2.mirrors.digitalocean.com/mariadb/repo/10.1/ubuntu trusty main' && \
   apt-get update && \
   apt-get install -y mariadb-server && \
   sed -i 's/^\(bind-address\s.*\)/# \1/' /etc/mysql/my.cnf
@@ -68,10 +67,10 @@ RUN \
 RUN apt-get install -y php5 php5-dev php-pear php5-gd php5-mysqlnd php5-curl php5-json php5-fpm
 RUN sed -ri 's/(max_execution_time =) ([0-9]+)/\1 120/' /etc/php5/cli/php.ini
 RUN sed -ri 's/(memory_limit =) ([0-9]+)/\1 -1/' /etc/php5/cli/php.ini
-RUN sed -ri 's/;(date.timezone =)/\1 Europe\/London/' /etc/php5/cli/php.ini
+RUN sed -ri 's/;(date.timezone =)/\1 America\/New_York/' /etc/php5/cli/php.ini
 RUN sed -ri 's/(max_execution_time =) ([0-9]+)/\1 120/' /etc/php5/fpm/php.ini
 RUN sed -ri 's/(memory_limit =) ([0-9]+)/\1 1024/' /etc/php5/fpm/php.ini
-RUN sed -ri 's/;(date.timezone =)/\1 Europe\/London/' /etc/php5/fpm/php.ini
+RUN sed -ri 's/;(date.timezone =)/\1 America\/New_York/' /etc/php5/fpm/php.ini
 
 # Install simple_php_yenc_decode.
 RUN \
@@ -97,16 +96,16 @@ RUN \
   unlink /etc/nginx/sites-enabled/default && \
   ln -s /etc/nginx/sites-available/nZEDb /etc/nginx/sites-enabled/nZEDb
 
-# Clone nZEDb master and set directory permissions
+# Clone nZEDb DEV and set directory permissions
 RUN \
   mkdir /var/www && \
   cd /var/www && \
   git clone https://github.com/nZEDb/nZEDb.git && \
-  chown www-data:www-data nZEDb/www -R
-  chmod 777 /var/www/nZEDb/libs/smarty/templates_c && \
+  chown www-data:www-data nZEDb/www -R && \
+  chmod 777 /var/www/nZEDb/libs/smarty/templates_c
 
 # Add services.
-RUN mkdir /etc/service/nginx
+RUN mkdir /etc/service/nginx 
 ADD nginx.sh /etc/service/nginx/run
 RUN mkdir /etc/service/php5-fpm && mkdir /var/log/php5-fpm
 ADD php5-fpm.sh /etc/service/php5-fpm/run
