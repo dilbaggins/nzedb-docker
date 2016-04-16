@@ -7,7 +7,7 @@
 FROM phusion/baseimage:0.9.13
 
 # Set maintainer
-MAINTAINER razorgirl <https://github.com/razorgirl>
+MAINTAINER dildo_baggins <https://github.com/dilbaggins>
 
 # Set correct environment variables.
 ENV TZ America/New_York
@@ -102,7 +102,9 @@ RUN \
   cd /var/www && \
   git clone https://github.com/nZEDb/nZEDb.git && \
   chown www-data:www-data nZEDb/www -R && \
-  chmod 777 /var/www/nZEDb/libs/smarty/templates_c
+  chmod 777 /var/www/nZEDb/libs/smarty/templates_c && \
+  chmod -R 777  /var/www/nZEDb/resources && \
+  chmod 777 /var/lib/php5
 
 # Add services.
 RUN mkdir /etc/service/nginx 
@@ -120,7 +122,7 @@ RUN cat /tmp/key.pub >> /root/.ssh/authorized_keys && rm -f /tmp/key.pub
 VOLUME ["/etc/nginx/sites-enabled", "/var/log", "/var/www/nZEDb", "/var/lib/mysql"]
 
 # Expose ports
-EXPOSE 8800
+#EXPOSE 8800
 
 # Clean up APT when done.
 RUN apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
