@@ -104,8 +104,8 @@ RUN \
   chown www-data:www-data nZEDb/www -R && \
   chmod 777 /var/www/nZEDb/libs/smarty/templates_c && \
   chmod -R 777  /var/www/nZEDb/resources && \
-  chmod 777 /var/lib/php5
-
+  chmod 777 /var/lib/php5 && \
+  chmod 777 /var/www/nZEDb/nzedb/config 
 # Add services.
 RUN mkdir /etc/service/nginx 
 ADD nginx.sh /etc/service/nginx/run
